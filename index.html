@@ -1,357 +1,393 @@
-import { useState, useEffect, useCallback } from "react";
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WORKOUT LOG</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  :root {
+    --bg: #faf9f7;
+    --bg2: #f3f0ec;
+    --border: #e2dbd4;
+    --pink: #b5445a;
+    --pink-light: #b5445a18;
+    --pink-mid: #b5445a55;
+    --gold: #a07830;
+    --gold-light: #a0783018;
+    --gold-mid: #a0783044;
+    --text: #3a3430;
+    --text-muted: #8a7e78;
+    --text-faint: #c4b8b0;
+  }
+  body { min-height:100vh; background:var(--bg); font-family:'DM Mono','Courier New',monospace; color:var(--text); padding-bottom:60px; }
+  ::-webkit-scrollbar { width:4px; background:var(--bg2); }
+  ::-webkit-scrollbar-thumb { background:var(--gold-mid); border-radius:2px; }
+  #app { max-width:780px; margin:0 auto; }
 
-// ── Google Fonts ─────────────────────────────────────────────
-const fontLink = document.createElement("link");
-fontLink.rel = "stylesheet";
-fontLink.href = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Nunito:wght@300;400;500;600&display=swap";
-document.head.appendChild(fontLink);
+  .card { background:#fff; border:1px solid var(--border); border-radius:14px; transition:border-color .15s, box-shadow .15s; }
+  .card:hover { border-color:var(--gold-mid); box-shadow:0 2px 16px #a0783010; }
+  .metric { background:var(--bg2); border-radius:10px; padding:12px 16px; }
+  .btn-primary { background:var(--pink); color:#fff; border:none; border-radius:8px; padding:10px 24px; cursor:pointer; font-weight:400; font-family:inherit; font-size:12px; letter-spacing:.1em; transition:background .15s,transform .1s; }
+  .btn-primary:hover { background:#9a3549; transform:translateY(-1px); }
+  .btn-ghost { background:transparent; color:var(--gold); border:1px solid var(--gold-mid); border-radius:8px; padding:9px 20px; cursor:pointer; font-family:inherit; font-size:12px; transition:border-color .15s; letter-spacing:.05em; }
+  .btn-ghost:hover { border-color:var(--gold); }
+  .btn-ghost-sm { background:transparent; color:var(--text-muted); border:1px solid var(--border); border-radius:6px; padding:5px 12px; cursor:pointer; font-family:inherit; font-size:11px; transition:border-color .15s; }
+  .btn-ghost-sm:hover { border-color:var(--gold-mid); color:var(--gold); }
+  .btn-danger { background:transparent; color:#c0392b; border:1px solid #c0392b33; border-radius:8px; padding:9px 20px; cursor:pointer; font-family:inherit; font-size:12px; }
+  .btn-danger:hover { border-color:#c0392b88; }
+  input, textarea { background:var(--bg2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:9px 13px; font-family:inherit; font-size:13px; width:100%; transition:border-color .15s; }
+  input:focus, textarea:focus { outline:none; border-color:var(--pink-mid); background:#fff; }
+  label { font-size:10px; color:var(--text-muted); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:5px; }
 
-// ── Palette ───────────────────────────────────────────────────
-const C = {
-  bg: "#faf8f6",
-  card: "#ffffff",
-  border: "#ece5e0",
-  borderLight: "#f2ede9",
-  accent: "#c4908a",
-  accentLight: "#f7eeec",
-  accentMid: "#d9b0aa",
-  sage: "#9aab97",
-  sageDark: "#7a8f77",
-  sageLight: "#eaf0e8",
-  mauve: "#b097a8",
-  mauveLight: "#ede5ef",
-  text: "#3e3530",
-  textMid: "#7a6e6a",
-  textLight: "#b0a49e",
-  shadow: "rgba(100,70,60,0.08)",
+  /* Header */
+  .header { padding:36px 28px 20px; border-bottom:1px solid var(--border); }
+  .header-top { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px; }
+  .logo { font-family:'Cormorant Garamond',Georgia,serif; font-size:38px; font-weight:300; letter-spacing:.12em; color:var(--text); line-height:1; }
+  .logo span { color:var(--pink); }
+  .subtitle { font-size:10px; color:var(--text-faint); letter-spacing:.15em; margin-top:4px; }
+  .pink-line { width:32px; height:2px; background:var(--pink); border-radius:2px; margin:10px 0 0; }
+  .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .summary-label { font-size:9px; color:var(--text-muted); letter-spacing:.1em; margin-bottom:6px; text-transform:uppercase; }
+  .summary-value { font-size:17px; font-weight:400; color:var(--text); }
+  .summary-accent { color:var(--gold); }
+
+  /* Tab nav */
+  .tab-nav { display:flex; gap:0; border-bottom:1px solid var(--border); padding:0 28px; }
+  .tab-btn { background:none; border:none; border-bottom:2px solid transparent; padding:14px 18px 12px; cursor:pointer; font-family:inherit; font-size:11px; letter-spacing:.1em; color:var(--text-muted); transition:color .15s,border-color .15s; margin-bottom:-1px; }
+  .tab-btn.active { color:var(--pink); border-bottom-color:var(--pink); }
+  .tab-btn:hover:not(.active) { color:var(--text); }
+
+  /* Content */
+  .content { padding:20px 28px; }
+  .records-list { display:flex; flex-direction:column; gap:10px; }
+  .row-card { padding:18px 22px; cursor:pointer; }
+  .row-card:hover { background:var(--bg2); }
+  .record-date { font-size:11px; color:var(--text-muted); margin-bottom:8px; letter-spacing:.08em; }
+  .record-main { display:flex; justify-content:space-between; align-items:center; }
+  .record-stats { display:flex; gap:22px; flex-wrap:wrap; align-items:baseline; }
+  .big-num { font-family:'Cormorant Garamond',Georgia,serif; font-size:28px; font-weight:300; color:var(--text); letter-spacing:.04em; }
+  .unit { font-size:11px; color:var(--text-muted); margin-left:2px; font-family:'DM Mono',monospace; }
+  .record-sub div { font-size:11px; color:var(--text-muted); text-align:right; line-height:1.7; }
+  .record-note { margin-top:10px; font-size:12px; color:var(--text-muted); font-style:italic; border-top:1px solid var(--border); padding-top:10px; }
+  .empty { text-align:center; color:var(--text-faint); padding:70px; font-size:13px; letter-spacing:.05em; }
+  .tag { display:inline-block; font-size:9px; letter-spacing:.1em; padding:2px 8px; border-radius:20px; margin-left:8px; vertical-align:middle; }
+  .tag-pink { background:var(--pink-light); color:var(--pink); border:1px solid var(--pink-mid); }
+  .tag-gold { background:var(--gold-light); color:var(--gold); border:1px solid var(--gold-mid); }
+
+  /* Calendar */
+  .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+  .cal-month { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:300; letter-spacing:.1em; }
+  .cal-month span { color:var(--pink); }
+  .cal-nav { display:flex; gap:8px; }
+  .cal-grid-head { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:6px; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .cal-dow { text-align:center; font-size:9px; color:var(--text-muted); letter-spacing:.1em; padding:6px 0; }
+  .cal-day {
+    aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    border-radius:10px; font-size:12px; color:var(--text-muted); position:relative;
+    cursor:default; transition:background .1s;
+  }
+  .cal-day.has-workout {
+    background:var(--pink-light); color:var(--pink); font-weight:500;
+    border:1px solid var(--pink-mid); cursor:pointer;
+  }
+  .cal-day.has-workout:hover { background:#b5445a28; }
+  .cal-day.today { border:1px solid var(--gold-mid); color:var(--gold); }
+  .cal-day.today.has-workout { border:1px solid var(--pink); }
+  .cal-day.empty { opacity:0; pointer-events:none; }
+  .cal-flower { font-size:11px; line-height:1; margin-top:1px; color:var(--pink); }
+  .cal-dot { width:4px; height:4px; border-radius:50%; background:var(--gold); margin-top:2px; }
+
+  /* Cal detail popup */
+  .cal-popup { background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-top:16px; box-shadow:0 4px 24px #3a343010; }
+  .cal-popup-date { font-size:11px; color:var(--text-muted); margin-bottom:10px; letter-spacing:.08em; }
+  .cal-popup-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+
+  /* Form */
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .form-full { grid-column:1/-1; }
+  .form-actions { display:flex; gap:10px; margin-top:20px; }
+  .back-row { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
+  .back-label { font-size:13px; color:var(--text-muted); }
+  .detail-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px; }
+  .detail-label { font-size:9px; color:var(--text-muted); margin-bottom:6px; letter-spacing:.1em; text-transform:uppercase; }
+  .detail-value { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; color:var(--text); }
+  .detail-note { border-top:1px solid var(--border); padding-top:12px; font-size:12px; color:var(--text-muted); font-style:italic; }
+
+  @media(max-width:600px) {
+    .summary-grid { grid-template-columns:1fr 1fr; }
+    .detail-grid { grid-template-columns:1fr 1fr; }
+    .cal-popup-stats { grid-template-columns:1fr 1fr; }
+    .form-grid { grid-template-columns:1fr; }
+    .form-full { grid-column:1; }
+    .header { padding:24px 18px 16px; }
+    .content { padding:16px 18px; }
+    .logo { font-size:30px; }
+    .tab-nav { padding:0 18px; }
+    .cal-day { font-size:11px; border-radius:8px; }
+    .cal-flower { font-size:9px; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const STORAGE_KEY = "workout-records-v2";
+const initialRecords = [{id:1742000000000,date:"2026-03-23",time:"20:14",distance:3.00,climbing:59,calories:184,caloriesPerHour:545,pace:"6:45",speed:8.8,mets:9.8,watts:124,note:""}];
+
+function loadRecords(){try{const s=localStorage.getItem(STORAGE_KEY);return s?JSON.parse(s):initialRecords;}catch{return initialRecords;}}
+function saveRecords(r){localStorage.setItem(STORAGE_KEY,JSON.stringify(r));}
+
+const now = new Date();
+let state = {
+  records: loadRecords(),
+  view: "list",      // list | add | detail | calendar
+  tab: "list",       // list | calendar
+  selected: null,
+  calYear: now.getFullYear(),
+  calMonth: now.getMonth(), // 0-indexed
+  calSelected: null, // date string selected on calendar
+  form: emptyForm()
 };
 
-// ── Data ──────────────────────────────────────────────────────
-const EXERCISES = [
-  { key: "legPress",       label: "レッグプレス",          icon: "🦵" },
-  { key: "torsoRotation",  label: "トーソローテーション",  icon: "🔄" },
-  { key: "hipAbductor",    label: "ヒップアブダクター",     icon: "🍑" },
-  { key: "abdominal",      label: "アブドミナル",          icon: "✨" },
-  { key: "chestPress",     label: "チェストプレス",        icon: "💪" },
-];
+function emptyForm(){return{date:new Date().toISOString().slice(0,10),time:"",distance:"",climbing:"",calories:"",caloriesPerHour:"",pace:"",speed:"",mets:"",watts:"",note:""};}
+function setState(p){state={...state,...p};render();}
 
-const DAYS_JP   = ["日","月","火","水","木","金","土"];
-const MONTHS_JP = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+function avg(key){const v=state.records.map(r=>parseFloat(r[key])).filter(v=>!isNaN(v)&&v>0);if(!v.length)return"–";return(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1);}
+function total(key){return state.records.map(r=>parseFloat(r[key])).filter(v=>!isNaN(v)).reduce((a,b)=>a+b,0).toFixed(1);}
 
-const defaultExercise  = () => ({ kg: "", reps: "" });
-const defaultTreadmill = () => ({ incline: "", speed: "", distance: "" });
-const defaultDayData   = () => ({
-  exercises: Object.fromEntries(EXERCISES.map(e => [e.key, defaultExercise()])),
-  treadmill: defaultTreadmill(),
-});
-
-function fmtKey(y, m, d) {
-  return `${y}-${String(m + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-}
-function isDayLogged(d) {
-  if (!d) return false;
-  return Object.values(d.exercises || {}).some(e => e.kg || e.reps)
-    || !!(d.treadmill?.distance || d.treadmill?.speed || d.treadmill?.incline);
+function addRecord(){
+  const f=state.form;
+  const rec={id:Date.now(),date:f.date,time:f.time,distance:parseFloat(f.distance)||0,climbing:parseInt(f.climbing)||0,calories:parseInt(f.calories)||0,caloriesPerHour:parseInt(f.caloriesPerHour)||0,pace:f.pace,speed:parseFloat(f.speed)||0,mets:parseFloat(f.mets)||0,watts:parseInt(f.watts)||0,note:f.note};
+  const next=[rec,...state.records];
+  saveRecords(next);
+  setState({records:next,view:"list",tab:"list",form:emptyForm()});
 }
 
-export default function GymTracker() {
-  const today = new Date();
-  const [year,    setYear]    = useState(today.getFullYear());
-  const [month,   setMonth]   = useState(today.getMonth());
-  const [selDate, setSelDate] = useState(fmtKey(today.getFullYear(), today.getMonth(), today.getDate()));
-  const [allData, setAllData] = useState({});
-  const [totalKm, setTotalKm] = useState(0);
-  const [loaded,  setLoaded]  = useState(false);
-  const [tab,     setTab]     = useState("exercises");
-  const [flash,   setFlash]   = useState(false);
+function deleteRecord(id){
+  if(!confirm("この記録を削除しますか？"))return;
+  const next=state.records.filter(r=>r.id!==id);
+  saveRecords(next);
+  setState({records:next,view:"list",tab:"list",selected:null});
+}
 
-  useEffect(() => {
-    (async () => {
-      try { const r = await window.storage.get("gym-alldata"); if (r) setAllData(JSON.parse(r.value)); } catch(_){}
-      try { const r = await window.storage.get("gym-totalkm"); if (r) setTotalKm(parseFloat(r.value)||0); } catch(_){}
-      setLoaded(true);
-    })();
-  }, []);
+function updateForm(key,value){setState({form:{...state.form,[key]:value}});}
 
-  const persist = useCallback(async (data, km) => {
-    try { await window.storage.set("gym-alldata", JSON.stringify(data)); } catch(_){}
-    try { await window.storage.set("gym-totalkm",  String(km)); } catch(_){}
-  }, []);
+// Build calendar
+function buildCalendar(year, month){
+  const workoutDates = new Set(state.records.map(r=>r.date));
+  const todayStr = new Date().toISOString().slice(0,10);
 
-  const day = allData[selDate] || defaultDayData();
+  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const jpMonth = (month+1)+"月";
+  const dowLabels = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
 
-  function upEx(key, field, val) {
-    const next = { ...allData, [selDate]: { ...day, exercises: { ...day.exercises, [key]: { ...day.exercises[key], [field]: val } } } };
-    setAllData(next); persist(next, totalKm);
-  }
-  function upTm(field, val) {
-    const next = { ...allData, [selDate]: { ...day, treadmill: { ...day.treadmill, [field]: val } } };
-    setAllData(next); persist(next, totalKm);
-  }
-  function addDist() {
-    const d = parseFloat(day.treadmill?.distance) || 0;
-    if (!d) return;
-    const nk = Math.round((totalKm + d) * 100) / 100;
-    setTotalKm(nk); persist(allData, nk);
-    setFlash(true); setTimeout(() => setFlash(false), 1400);
-  }
-  function resetDist() {
-    if (!window.confirm("総走行距離をリセットしますか？")) return;
-    setTotalKm(0); persist(allData, 0);
-  }
-
-  const firstDay    = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const todayKey    = fmtKey(today.getFullYear(), today.getMonth(), today.getDate());
-
-  function prevM() { if (month===0){setYear(y=>y-1);setMonth(11);}else setMonth(m=>m-1); }
-  function nextM() { if (month===11){setYear(y=>y+1);setMonth(0);}else setMonth(m=>m+1); }
-
-  const borderColors = [C.accentMid, C.sage, C.mauve, C.accentMid, C.sage];
-
-  if (!loaded) return (
-    <div style={{ background: C.bg, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center",
-      fontFamily: "'Nunito',sans-serif", color: C.textLight, fontSize: "12px", letterSpacing: "0.25em" }}>
-      loading...
+  let html = `<div class="cal-header">
+    <div>
+      <div class="cal-month">${year} <span>${jpMonth}</span></div>
     </div>
-  );
+    <div class="cal-nav">
+      <button class="btn-ghost-sm" onclick="setState({calYear:${month===0?year-1:year},calMonth:${month===0?11:month-1},calSelected:null})">←</button>
+      <button class="btn-ghost-sm" onclick="setState({calYear:${month===11?year+1:year},calMonth:${month===11?0:month+1},calSelected:null})">→</button>
+    </div>
+  </div>
+  <div class="cal-grid-head">`;
+  dowLabels.forEach(d=>{ html+=`<div class="cal-dow">${d}</div>`; });
+  html+=`</div><div class="cal-grid">`;
 
-  return (
-    <div style={{ background: C.bg, minHeight: "100vh", fontFamily: "'Nunito',sans-serif", color: C.text, paddingBottom: "60px" }}>
+  // empty cells before first day
+  for(let i=0;i<firstDay;i++) html+=`<div class="cal-day empty"></div>`;
 
-      {/* ── Header ── */}
-      <div style={{
-        background: C.card, borderBottom: `1px solid ${C.border}`,
-        padding: "20px 24px 16px", display: "flex", alignItems: "center",
-        position: "sticky", top: 0, zIndex: 10,
-        boxShadow: `0 2px 16px ${C.shadow}`,
-      }}>
+  for(let d=1;d<=daysInMonth;d++){
+    const mm=String(month+1).padStart(2,"0");
+    const dd=String(d).padStart(2,"0");
+    const dateStr=`${year}-${mm}-${dd}`;
+    const hasW=workoutDates.has(dateStr);
+    const isToday=dateStr===todayStr;
+    const isSel=dateStr===state.calSelected;
+    let cls="cal-day";
+    if(hasW) cls+=" has-workout";
+    if(isToday) cls+=" today";
+    const selStyle=isSel?" background:var(--pink-light);outline:2px solid var(--pink);":"";
+    html+=`<div class="${cls}" style="${selStyle}" ${hasW?`onclick="setState({calSelected:'${dateStr}'})"`:""}>${d}`;
+    if(hasW) html+=`<div class="cal-flower">✿</div>`;
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+
+  // Show popup for selected day
+  if(state.calSelected){
+    const rec=state.records.find(r=>r.date===state.calSelected);
+    if(rec){
+      html+=`<div class="cal-popup">
+        <div class="cal-popup-date">${state.calSelected} ✿</div>
+        <div class="cal-popup-stats">
+          ${dm2("距離",rec.distance+" km")}
+          ${dm2("時間",rec.time+" min")}
+          ${dm2("消費カロリー",rec.calories+" kcal")}
+          ${dm2("平均ペース",rec.pace+" /km")}
+          ${dm2("平均速度",rec.speed+" km/h")}
+          ${dm2("METs",""+rec.mets)}
+        </div>
+        ${rec.note?`<div style="margin-top:10px;font-size:12px;color:var(--text-muted);font-style:italic">${rec.note}</div>`:""}
+        <div style="margin-top:12px">
+          <button class="btn-ghost-sm" onclick="setState({view:'detail',selected:${rec.id},tab:'list'})">詳細を見る →</button>
+        </div>
+      </div>`;
+    }
+  }
+  return html;
+}
+
+function dm2(label,value){return `<div class="metric"><div class="detail-label">${label}</div><div style="font-size:14px;font-family:'Cormorant Garamond',serif;font-weight:300">${value}</div></div>`;}
+
+function render(){
+  const app=document.getElementById("app");
+  const sorted=[...state.records].sort((a,b)=>b.date.localeCompare(a.date));
+  const totalDist=parseFloat(total("distance")).toFixed(1);
+  const totalCal=parseFloat(total("calories")).toFixed(0);
+
+  // Header (always shown except add/detail)
+  const showHeader = state.view==="list" || state.view==="calendar";
+
+  let html="";
+
+  if(showHeader){
+    html+=`<div class="header">
+      <div class="header-top">
         <div>
-          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "24px", fontWeight: 500, color: C.text, letterSpacing: "0.05em", lineHeight: 1.1 }}>
-            My Gym Log
-          </div>
-          <div style={{ fontSize: "9px", color: C.textLight, letterSpacing: "0.3em", marginTop: "3px" }}>
-            workout tracker ✿
-          </div>
+          <div class="logo">Workout <span>Log</span></div>
+          <div class="subtitle">${state.records.length} SESSIONS RECORDED</div>
+          <div class="pink-line"></div>
         </div>
-
-        <div style={{
-          marginLeft: "auto", textAlign: "right",
-          background: C.accentLight, border: `1px solid ${C.accentMid}`,
-          borderRadius: "14px", padding: "10px 16px",
-        }}>
-          <div style={{ fontSize: "9px", letterSpacing: "0.25em", color: C.accentMid, marginBottom: "2px" }}>TOTAL RUN</div>
-          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "26px", fontWeight: 600, color: C.accent, lineHeight: 1 }}>
-            {totalKm.toFixed(2)}<span style={{ fontSize: "11px", marginLeft: "2px", fontWeight: 400 }}>km</span>
-          </div>
-          <button onClick={resetDist} style={{
-            marginTop: "5px", fontSize: "9px", letterSpacing: "0.15em",
-            padding: "2px 8px", background: "transparent",
-            border: `1px solid ${C.accentMid}`, color: C.accent,
-            borderRadius: "8px", cursor: "pointer", fontFamily: "'Nunito',sans-serif",
-          }}>reset</button>
-        </div>
+        <button class="btn-primary" onclick="setState({view:'add',form:emptyForm()})">+ 記録を追加</button>
       </div>
-
-      <div style={{ maxWidth: "480px", margin: "0 auto", padding: "20px 16px 0" }}>
-
-        {/* ── Calendar ── */}
-        <div style={{
-          background: C.card, borderRadius: "18px",
-          border: `1px solid ${C.border}`, overflow: "hidden",
-          boxShadow: `0 2px 20px ${C.shadow}`,
-        }}>
-          <div style={{ display: "flex", alignItems: "center", padding: "16px 20px 12px", borderBottom: `1px solid ${C.borderLight}` }}>
-            <button onClick={prevM} style={navBtn}>‹</button>
-            <div style={{ flex: 1, textAlign: "center", fontFamily: "'Cormorant Garamond',serif", fontSize: "18px", fontWeight: 500, color: C.text, letterSpacing: "0.08em" }}>
-              {year} / {MONTHS_JP[month]}
-            </div>
-            <button onClick={nextM} style={navBtn}>›</button>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", padding: "10px 10px 0" }}>
-            {DAYS_JP.map((d, i) => (
-              <div key={d} style={{ textAlign: "center", fontSize: "10px", letterSpacing: "0.1em", padding: "4px 0",
-                color: i===0 ? C.accent : i===6 ? C.mauve : C.textLight }}>
-                {d}
-              </div>
-            ))}
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", padding: "4px 10px 14px", gap: "3px" }}>
-            {Array.from({length: firstDay}).map((_,i) => <div key={`e${i}`} />)}
-            {Array.from({length: daysInMonth}).map((_,i) => {
-              const d   = i + 1;
-              const key = fmtKey(year, month, d);
-              const logged  = isDayLogged(allData[key]);
-              const isToday = key === todayKey;
-              const isSel   = key === selDate;
-              const dow     = (firstDay + i) % 7;
-              return (
-                <div key={d} onClick={() => setSelDate(key)} style={{
-                  textAlign: "center", padding: "7px 2px", cursor: "pointer", borderRadius: "10px",
-                  background: isSel ? C.accentLight : isToday ? C.sageLight : "transparent",
-                  border: isSel ? `1.5px solid ${C.accentMid}` : "1.5px solid transparent",
-                  transition: "background 0.15s",
-                }}>
-                  <div style={{
-                    fontSize: "13px", fontWeight: isSel ? 600 : 400,
-                    color: isSel ? C.accent : isToday ? C.sageDark
-                      : dow===0 ? C.accent : dow===6 ? C.mauve : C.text,
-                  }}>{d}</div>
-                  {logged
-                    ? <div style={{ fontSize: "10px", color: C.accent, lineHeight: 1.2 }}>✿</div>
-                    : <div style={{ height: "14px" }} />}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* ── Date label ── */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "20px 4px 14px" }}>
-          <div style={{ width: "3px", height: "18px", background: `linear-gradient(to bottom, ${C.accent}, ${C.mauve})`, borderRadius: "2px" }} />
-          <span style={{ fontSize: "12px", color: C.textMid, letterSpacing: "0.1em" }}>{selDate} の記録</span>
-          {isDayLogged(allData[selDate]) && <span style={{ fontSize: "14px", color: C.accent }}>✿</span>}
-        </div>
-
-        {/* ── Tabs ── */}
-        <div style={{
-          display: "flex", background: C.card,
-          border: `1px solid ${C.border}`, borderRadius: "14px",
-          overflow: "hidden", marginBottom: "16px",
-          boxShadow: `0 1px 8px ${C.shadow}`,
-        }}>
-          {[["exercises","🏋️  マシン"],["treadmill","🏃  トレッドミル"]].map(([t,l]) => (
-            <button key={t} onClick={() => setTab(t)} style={{
-              flex: 1, padding: "12px 8px", border: "none", cursor: "pointer",
-              background: tab===t ? C.accentLight : "transparent",
-              color: tab===t ? C.accent : C.textLight,
-              fontSize: "11px", letterSpacing: "0.12em",
-              fontFamily: "'Nunito',sans-serif", fontWeight: tab===t ? 600 : 400,
-              transition: "all 0.2s",
-              borderRight: t==="exercises" ? `1px solid ${C.border}` : "none",
-            }}>{l}</button>
-          ))}
-        </div>
-
-        {/* ── Exercise cards ── */}
-        {tab === "exercises" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {EXERCISES.map((ex, idx) => {
-              const v = day.exercises[ex.key] || defaultExercise();
-              return (
-                <div key={ex.key} style={{
-                  background: C.card, border: `1px solid ${C.border}`,
-                  borderLeft: `3px solid ${borderColors[idx]}`,
-                  borderRadius: "14px", padding: "14px 16px",
-                  boxShadow: `0 1px 8px ${C.shadow}`,
-                }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-                    <span style={{ fontSize: "15px" }}>{ex.icon}</span>
-                    <span style={{ fontSize: "12px", fontWeight: 600, letterSpacing: "0.05em", color: C.textMid }}>{ex.label}</span>
-                  </div>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    <label style={{ flex: 1 }}>
-                      <div style={lbStyle}>重量 (kg)</div>
-                      <input type="number" value={v.kg} placeholder="0"
-                        onChange={e => upEx(ex.key,"kg",e.target.value)} style={inStyle} />
-                    </label>
-                    <label style={{ flex: 1 }}>
-                      <div style={lbStyle}>回数 (rep)</div>
-                      <input type="number" value={v.reps} placeholder="0"
-                        onChange={e => upEx(ex.key,"reps",e.target.value)} style={inStyle} />
-                    </label>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* ── Treadmill card ── */}
-        {tab === "treadmill" && (
-          <div style={{
-            background: C.card, border: `1px solid ${C.border}`,
-            borderLeft: `3px solid ${C.sage}`,
-            borderRadius: "14px", padding: "18px 16px",
-            boxShadow: `0 1px 8px ${C.shadow}`,
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-              <span style={{ fontSize: "15px" }}>🏃</span>
-              <span style={{ fontSize: "12px", fontWeight: 600, letterSpacing: "0.05em", color: C.textMid }}>トレッドミル</span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {[
-                { field:"incline",  label:"傾斜率 (%)",      step:"0.1",  ph:"0.0"  },
-                { field:"speed",    label:"平均速度 (km/h)", step:"0.1",  ph:"0.0"  },
-                { field:"distance", label:"走行距離 (km)",   step:"0.01", ph:"0.00" },
-              ].map(({field,label,step,ph}) => (
-                <label key={field}>
-                  <div style={lbStyle}>{label}</div>
-                  <input type="number" step={step} placeholder={ph}
-                    value={day.treadmill?.[field]||""}
-                    onChange={e => upTm(field, e.target.value)} style={inStyle} />
-                </label>
-              ))}
-            </div>
-
-            <button onClick={addDist} style={{
-              marginTop: "16px", width: "100%", padding: "13px",
-              background: flash ? C.sageLight : C.accentLight,
-              border: `1.5px solid ${flash ? C.sage : C.accentMid}`,
-              color: flash ? C.sageDark : C.accent,
-              fontSize: "11px", letterSpacing: "0.18em",
-              fontFamily: "'Nunito',sans-serif", fontWeight: 600,
-              cursor: "pointer", borderRadius: "10px", transition: "all 0.3s",
-            }}>
-              {flash ? "✓  加算しました 🌸" : "＋  総走行距離に加算する"}
-            </button>
-
-            <div style={{
-              marginTop: "14px", padding: "20px",
-              background: C.accentLight, borderRadius: "12px", textAlign: "center",
-              border: `1px solid ${C.border}`,
-            }}>
-              <div style={{ fontSize: "9px", letterSpacing: "0.3em", color: C.accentMid, marginBottom: "6px" }}>
-                CUMULATIVE DISTANCE
-              </div>
-              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "42px", fontWeight: 500, color: C.accent, lineHeight: 1 }}>
-                {totalKm.toFixed(2)}
-                <span style={{ fontSize: "14px", marginLeft: "4px", fontWeight: 400 }}>km</span>
-              </div>
-              <div style={{ fontSize: "10px", color: C.accentMid, marginTop: "8px" }}>
-                ≈ {Math.floor(totalKm / 42.195 * 10) / 10} marathons 🌸
-              </div>
-            </div>
-          </div>
-        )}
+      <div class="summary-grid">
+        <div class="metric"><div class="summary-label">総距離</div><div class="summary-value summary-accent">${totalDist} <span style="font-size:12px;color:var(--text-muted)">km</span></div></div>
+        <div class="metric"><div class="summary-label">総消費カロリー</div><div class="summary-value summary-accent">${totalCal} <span style="font-size:12px;color:var(--text-muted)">kcal</span></div></div>
+        <div class="metric"><div class="summary-label">平均ペース</div><div class="summary-value">${avg("pace")} <span style="font-size:12px;color:var(--text-muted)">/km</span></div></div>
+        <div class="metric"><div class="summary-label">平均速度</div><div class="summary-value">${avg("speed")} <span style="font-size:12px;color:var(--text-muted)">km/h</span></div></div>
       </div>
-
-      <style>{`
-        input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button { opacity: 0.3; }
-        input::placeholder { color: #d5cbc7; }
-        input:focus { outline: none !important; border-color: ${C.accentMid} !important; background: ${C.accentLight} !important; }
-        * { box-sizing: border-box; }
-      `}</style>
     </div>
-  );
+    <div class="tab-nav">
+      <button class="tab-btn ${state.view==='list'?'active':''}" onclick="setState({view:'list',tab:'list'})">RECORDS</button>
+      <button class="tab-btn ${state.view==='calendar'?'active':''}" onclick="setState({view:'calendar',tab:'calendar'})">CALENDAR</button>
+    </div>`;
+  }
+
+  // LIST VIEW
+  if(state.view==="list"){
+    html+=`<div class="content">`;
+    if(!sorted.length){
+      html+=`<div class="empty">まだ記録がありません</div>`;
+    }else{
+      html+=`<div class="records-list">`;
+      sorted.forEach(r=>{
+        html+=`<div class="card row-card" onclick="setState({view:'detail',selected:${r.id}})">
+          <div class="record-date">${r.date} <span class="tag tag-pink">${r.distance}km</span><span class="tag tag-gold">${r.calories}kcal</span></div>
+          <div class="record-main">
+            <div class="record-stats">
+              <span class="big-num">${r.distance}<span class="unit">km</span></span>
+              <span class="big-num">${r.time}<span class="unit">min</span></span>
+              <span class="big-num">${r.calories}<span class="unit">kcal</span></span>
+            </div>
+            <div class="record-sub">
+              <div>${r.pace} /km</div>
+              <div>${r.speed} km/h</div>
+              <div>METs ${r.mets}</div>
+            </div>
+          </div>
+          ${r.note?`<div class="record-note">${r.note}</div>`:""}
+        </div>`;
+      });
+      html+=`</div>`;
+    }
+    html+=`</div>`;
+  }
+
+  // CALENDAR VIEW
+  if(state.view==="calendar"){
+    html+=`<div class="content"><div class="card" style="padding:22px 20px">`;
+    html+=buildCalendar(state.calYear, state.calMonth);
+    html+=`</div></div>`;
+  }
+
+  // ADD VIEW
+  if(state.view==="add"){
+    html+=`<div class="content">
+      <div class="back-row">
+        <button class="btn-ghost" onclick="setState({view:'list',tab:'list'})">← 戻る</button>
+        <span class="back-label">新しい記録</span>
+      </div>
+      <div class="card" style="padding:22px">
+        <div class="form-grid">
+          ${fld("date","日付","date",state.form.date)}
+          ${fld("time","経過時間 (MM:SS)","text",state.form.time)}
+          ${fld("distance","距離 (km)","number",state.form.distance)}
+          ${fld("climbing","クライミング (m)","number",state.form.climbing)}
+          ${fld("calories","消費カロリー (kcal)","number",state.form.calories)}
+          ${fld("caloriesPerHour","1時間あたり消費カロリー","number",state.form.caloriesPerHour)}
+          ${fld("pace","平均ペース (分/km)","text",state.form.pace)}
+          ${fld("speed","平均速度 (km/h)","number",state.form.speed)}
+          ${fld("mets","METs","number",state.form.mets)}
+          ${fld("watts","ワット (W)","number",state.form.watts)}
+          <div class="form-full">
+            <label>メモ</label>
+            <textarea rows="2" oninput="updateForm('note',this.value)">${state.form.note}</textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="addRecord()">保存する</button>
+          <button class="btn-ghost" onclick="setState({view:'list',tab:'list'})">キャンセル</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // DETAIL VIEW
+  if(state.view==="detail"&&state.selected){
+    const r=state.records.find(x=>x.id===state.selected);
+    if(r){
+      html+=`<div style="padding:28px 28px 0;border-bottom:1px solid var(--border)">
+        <div class="logo" style="font-size:28px">Workout <span>Log</span></div>
+      </div>
+      <div class="content">
+        <div class="back-row">
+          <button class="btn-ghost" onclick="setState({view:'list',tab:'list'})">← 戻る</button>
+          <span class="back-label">${r.date}</span>
+        </div>
+        <div class="card" style="padding:24px">
+          <div class="detail-grid">
+            ${dm("経過時間",r.time)}
+            ${dm("距離",r.distance+" km")}
+            ${dm("消費カロリー",r.calories+" kcal")}
+            ${dm("1h消費カロリー",r.caloriesPerHour+" kcal")}
+            ${dm("平均ペース",r.pace+" /km")}
+            ${dm("平均速度",r.speed+" km/h")}
+            ${dm("クライミング",r.climbing+" m")}
+            ${dm("METs",""+r.mets)}
+            ${dm("ワット",r.watts+" W")}
+          </div>
+          ${r.note?`<div class="detail-note">${r.note}</div>`:""}
+        </div>
+        <div style="margin-top:16px">
+          <button class="btn-danger" onclick="deleteRecord(${r.id})">この記録を削除</button>
+        </div>
+      </div>`;
+    }
+  }
+
+  app.innerHTML=html;
 }
 
-const navBtn = {
-  background: "transparent", border: `1px solid ${C.border}`,
-  color: C.textLight, padding: "5px 14px", cursor: "pointer",
-  borderRadius: "8px", fontSize: "20px", lineHeight: 1,
-  fontFamily: "'Cormorant Garamond',serif",
-};
-const lbStyle = {
-  fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase",
-  color: C.textLight, marginBottom: "5px",
-};
-const inStyle = {
-  width: "100%", background: C.bg,
-  border: `1px solid ${C.border}`, borderRadius: "8px",
-  padding: "10px 12px", color: C.text, fontSize: "15px",
-  fontFamily: "'Nunito',sans-serif", transition: "all 0.2s",
-};
+function fld(key,label,type,value){return `<div><label>${label}</label><input type="${type}" value="${value||''}" oninput="updateForm('${key}',this.value)"></div>`;}
+function dm(label,value){return `<div class="metric"><div class="detail-label">${label}</div><div class="detail-value">${value}</div></div>`;}
+
+render();
+</script>
+</body>
+</html>
