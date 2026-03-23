@@ -25,7 +25,6 @@
   ::-webkit-scrollbar { width:4px; background:var(--bg2); }
   ::-webkit-scrollbar-thumb { background:var(--gold-mid); border-radius:2px; }
   #app { max-width:780px; margin:0 auto; }
-
   .card { background:#fff; border:1px solid var(--border); border-radius:14px; transition:border-color .15s, box-shadow .15s; }
   .card:hover { border-color:var(--gold-mid); box-shadow:0 2px 16px #a0783010; }
   .metric { background:var(--bg2); border-radius:10px; padding:12px 16px; }
@@ -40,8 +39,6 @@
   input, textarea { background:var(--bg2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:9px 13px; font-family:inherit; font-size:13px; width:100%; transition:border-color .15s; }
   input:focus, textarea:focus { outline:none; border-color:var(--pink-mid); background:#fff; }
   label { font-size:10px; color:var(--text-muted); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:5px; }
-
-  /* Header */
   .header { padding:36px 28px 20px; border-bottom:1px solid var(--border); }
   .header-top { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px; }
   .logo { font-family:'Cormorant Garamond',Georgia,serif; font-size:38px; font-weight:300; letter-spacing:.12em; color:var(--text); line-height:1; }
@@ -52,14 +49,10 @@
   .summary-label { font-size:9px; color:var(--text-muted); letter-spacing:.1em; margin-bottom:6px; text-transform:uppercase; }
   .summary-value { font-size:17px; font-weight:400; color:var(--text); }
   .summary-accent { color:var(--gold); }
-
-  /* Tab nav */
   .tab-nav { display:flex; gap:0; border-bottom:1px solid var(--border); padding:0 28px; }
   .tab-btn { background:none; border:none; border-bottom:2px solid transparent; padding:14px 18px 12px; cursor:pointer; font-family:inherit; font-size:11px; letter-spacing:.1em; color:var(--text-muted); transition:color .15s,border-color .15s; margin-bottom:-1px; }
   .tab-btn.active { color:var(--pink); border-bottom-color:var(--pink); }
   .tab-btn:hover:not(.active) { color:var(--text); }
-
-  /* Content */
   .content { padding:20px 28px; }
   .records-list { display:flex; flex-direction:column; gap:10px; }
   .row-card { padding:18px 22px; cursor:pointer; }
@@ -75,8 +68,6 @@
   .tag { display:inline-block; font-size:9px; letter-spacing:.1em; padding:2px 8px; border-radius:20px; margin-left:8px; vertical-align:middle; }
   .tag-pink { background:var(--pink-light); color:var(--pink); border:1px solid var(--pink-mid); }
   .tag-gold { background:var(--gold-light); color:var(--gold); border:1px solid var(--gold-mid); }
-
-  /* Calendar */
   .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
   .cal-month { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:300; letter-spacing:.1em; }
   .cal-month span { color:var(--pink); }
@@ -84,28 +75,16 @@
   .cal-grid-head { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:6px; }
   .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
   .cal-dow { text-align:center; font-size:9px; color:var(--text-muted); letter-spacing:.1em; padding:6px 0; }
-  .cal-day {
-    aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    border-radius:10px; font-size:12px; color:var(--text-muted); position:relative;
-    cursor:default; transition:background .1s;
-  }
-  .cal-day.has-workout {
-    background:var(--pink-light); color:var(--pink); font-weight:500;
-    border:1px solid var(--pink-mid); cursor:pointer;
-  }
+  .cal-day { aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:10px; font-size:12px; color:var(--text-muted); position:relative; cursor:default; transition:background .1s; }
+  .cal-day.has-workout { background:var(--pink-light); color:var(--pink); font-weight:500; border:1px solid var(--pink-mid); cursor:pointer; }
   .cal-day.has-workout:hover { background:#b5445a28; }
   .cal-day.today { border:1px solid var(--gold-mid); color:var(--gold); }
   .cal-day.today.has-workout { border:1px solid var(--pink); }
   .cal-day.empty { opacity:0; pointer-events:none; }
   .cal-flower { font-size:11px; line-height:1; margin-top:1px; color:var(--pink); }
-  .cal-dot { width:4px; height:4px; border-radius:50%; background:var(--gold); margin-top:2px; }
-
-  /* Cal detail popup */
   .cal-popup { background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-top:16px; box-shadow:0 4px 24px #3a343010; }
   .cal-popup-date { font-size:11px; color:var(--text-muted); margin-bottom:10px; letter-spacing:.08em; }
   .cal-popup-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-
-  /* Form */
   .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .form-full { grid-column:1/-1; }
   .form-actions { display:flex; gap:10px; margin-top:20px; }
@@ -115,7 +94,6 @@
   .detail-label { font-size:9px; color:var(--text-muted); margin-bottom:6px; letter-spacing:.1em; text-transform:uppercase; }
   .detail-value { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; color:var(--text); }
   .detail-note { border-top:1px solid var(--border); padding-top:12px; font-size:12px; color:var(--text-muted); font-style:italic; }
-
   @media(max-width:600px) {
     .summary-grid { grid-template-columns:1fr 1fr; }
     .detail-grid { grid-template-columns:1fr 1fr; }
@@ -143,19 +121,19 @@ function saveRecords(r){localStorage.setItem(STORAGE_KEY,JSON.stringify(r));}
 const now = new Date();
 let state = {
   records: loadRecords(),
-  view: "list",      // list | add | detail | calendar
-  tab: "list",       // list | calendar
+  view: "list",
+  tab: "list",
   selected: null,
   calYear: now.getFullYear(),
-  calMonth: now.getMonth(), // 0-indexed
-  calSelected: null, // date string selected on calendar
+  calMonth: now.getMonth(),
+  calSelected: null,
   form: emptyForm()
 };
 
-function emptyForm(){return{date:new Date().toISOString().slice(0,10),time:"",distance:"",climbing:"",calories:"",caloriesPerHour:"",pace:"",speed:"",mets:"",watts:"",note:""};}
+function emptyForm(){return{date:new Date().toISOString().slice(0,10),time:"",distance:"",climbing:"",calories:"",caloriesPerHour:"",pace:"",speed:"",mets:"",watts:"",note:""}}
 function setState(p){state={...state,...p};render();}
 
-function avg(key){const v=state.records.map(r=>parseFloat(r[key])).filter(v=>!isNaN(v)&&v>0);if(!v.length)return"–";return(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1);}
+function avg(key){const v=state.records.map(r=>parseFloat(r[key])).filter(v=>!isNaN(v)&&v>0);if(!v.length)return"\u2013";return(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1);}
 function total(key){return state.records.map(r=>parseFloat(r[key])).filter(v=>!isNaN(v)).reduce((a,b)=>a+b,0).toFixed(1);}
 
 function addRecord(){
@@ -167,7 +145,7 @@ function addRecord(){
 }
 
 function deleteRecord(id){
-  if(!confirm("この記録を削除しますか？"))return;
+  if(!confirm("\u3053\u306e\u8a18\u9332\u3092\u524a\u9664\u3057\u307e\u3059\u304b\uff1f"))return;
   const next=state.records.filter(r=>r.id!==id);
   saveRecords(next);
   setState({records:next,view:"list",tab:"list",selected:null});
@@ -175,33 +153,17 @@ function deleteRecord(id){
 
 function updateForm(key,value){setState({form:{...state.form,[key]:value}});}
 
-// Build calendar
-function buildCalendar(year, month){
-  const workoutDates = new Set(state.records.map(r=>r.date));
-  const todayStr = new Date().toISOString().slice(0,10);
-
-  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  const jpMonth = (month+1)+"月";
-  const dowLabels = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
-
-  let html = `<div class="cal-header">
-    <div>
-      <div class="cal-month">${year} <span>${jpMonth}</span></div>
-    </div>
-    <div class="cal-nav">
-      <button class="btn-ghost-sm" onclick="setState({calYear:${month===0?year-1:year},calMonth:${month===0?11:month-1},calSelected:null})">←</button>
-      <button class="btn-ghost-sm" onclick="setState({calYear:${month===11?year+1:year},calMonth:${month===11?0:month+1},calSelected:null})">→</button>
-    </div>
-  </div>
-  <div class="cal-grid-head">`;
-  dowLabels.forEach(d=>{ html+=`<div class="cal-dow">${d}</div>`; });
+function buildCalendar(year,month){
+  const workoutDates=new Set(state.records.map(r=>r.date));
+  const todayStr=new Date().toISOString().slice(0,10);
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const jpMonth=(month+1)+"\u6708";
+  const dowLabels=["SUN","MON","TUE","WED","THU","FRI","SAT"];
+  let html=`<div class="cal-header"><div><div class="cal-month">${year} <span>${jpMonth}</span></div></div><div class="cal-nav"><button class="btn-ghost-sm" onclick="setState({calYear:${month===0?year-1:year},calMonth:${month===0?11:month-1},calSelected:null})">\u2190</button><button class="btn-ghost-sm" onclick="setState({calYear:${month===11?year+1:year},calMonth:${month===11?0:month+1},calSelected:null})">\u2192</button></div></div><div class="cal-grid-head">`;
+  dowLabels.forEach(d=>{html+=`<div class="cal-dow">${d}</div>`;});
   html+=`</div><div class="cal-grid">`;
-
-  // empty cells before first day
-  for(let i=0;i<firstDay;i++) html+=`<div class="cal-day empty"></div>`;
-
+  for(let i=0;i<firstDay;i++)html+=`<div class="cal-day empty"></div>`;
   for(let d=1;d<=daysInMonth;d++){
     const mm=String(month+1).padStart(2,"0");
     const dd=String(d).padStart(2,"0");
@@ -210,34 +172,18 @@ function buildCalendar(year, month){
     const isToday=dateStr===todayStr;
     const isSel=dateStr===state.calSelected;
     let cls="cal-day";
-    if(hasW) cls+=" has-workout";
-    if(isToday) cls+=" today";
-    const selStyle=isSel?" background:var(--pink-light);outline:2px solid var(--pink);":"";
+    if(hasW)cls+=" has-workout";
+    if(isToday)cls+=" today";
+    const selStyle=isSel?"background:var(--pink-light);outline:2px solid var(--pink);":"";
     html+=`<div class="${cls}" style="${selStyle}" ${hasW?`onclick="setState({calSelected:'${dateStr}'})"`:""}>${d}`;
-    if(hasW) html+=`<div class="cal-flower">✿</div>`;
+    if(hasW)html+=`<div class="cal-flower">\u273f</div>`;
     html+=`</div>`;
   }
   html+=`</div>`;
-
-  // Show popup for selected day
   if(state.calSelected){
     const rec=state.records.find(r=>r.date===state.calSelected);
     if(rec){
-      html+=`<div class="cal-popup">
-        <div class="cal-popup-date">${state.calSelected} ✿</div>
-        <div class="cal-popup-stats">
-          ${dm2("距離",rec.distance+" km")}
-          ${dm2("時間",rec.time+" min")}
-          ${dm2("消費カロリー",rec.calories+" kcal")}
-          ${dm2("平均ペース",rec.pace+" /km")}
-          ${dm2("平均速度",rec.speed+" km/h")}
-          ${dm2("METs",""+rec.mets)}
-        </div>
-        ${rec.note?`<div style="margin-top:10px;font-size:12px;color:var(--text-muted);font-style:italic">${rec.note}</div>`:""}
-        <div style="margin-top:12px">
-          <button class="btn-ghost-sm" onclick="setState({view:'detail',selected:${rec.id},tab:'list'})">詳細を見る →</button>
-        </div>
-      </div>`;
+      html+=`<div class="cal-popup"><div class="cal-popup-date">${state.calSelected} \u273f</div><div class="cal-popup-stats">${dm2("\u8ddd\u96e2",rec.distance+" km")}${dm2("\u6642\u9593",rec.time+" min")}${dm2("\u6d88\u8cbb\u30ab\u30ed\u30ea\u30fc",rec.calories+" kcal")}${dm2("\u5e73\u5747\u30da\u30fc\u30b9",rec.pace+" /km")}${dm2("\u5e73\u5747\u901f\u5ea6",rec.speed+" km/h")}${dm2("METs",""+rec.mets)}</div>${rec.note?`<div style="margin-top:10px;font-size:12px;color:var(--text-muted);font-style:italic">${rec.note}</div>`:""}<div style="margin-top:12px"><button class="btn-ghost-sm" onclick="setState({view:'detail',selected:${rec.id},tab:'list'})">\u8a73\u7d30\u3092\u898b\u308b \u2192</button></div></div>`;
     }
   }
   return html;
@@ -250,144 +196,21 @@ function render(){
   const sorted=[...state.records].sort((a,b)=>b.date.localeCompare(a.date));
   const totalDist=parseFloat(total("distance")).toFixed(1);
   const totalCal=parseFloat(total("calories")).toFixed(0);
-
-  // Header (always shown except add/detail)
-  const showHeader = state.view==="list" || state.view==="calendar";
-
+  const showHeader=state.view==="list"||state.view==="calendar";
   let html="";
-
   if(showHeader){
-    html+=`<div class="header">
-      <div class="header-top">
-        <div>
-          <div class="logo">Workout <span>Log</span></div>
-          <div class="subtitle">${state.records.length} SESSIONS RECORDED</div>
-          <div class="pink-line"></div>
-        </div>
-        <button class="btn-primary" onclick="setState({view:'add',form:emptyForm()})">+ 記録を追加</button>
-      </div>
-      <div class="summary-grid">
-        <div class="metric"><div class="summary-label">総距離</div><div class="summary-value summary-accent">${totalDist} <span style="font-size:12px;color:var(--text-muted)">km</span></div></div>
-        <div class="metric"><div class="summary-label">総消費カロリー</div><div class="summary-value summary-accent">${totalCal} <span style="font-size:12px;color:var(--text-muted)">kcal</span></div></div>
-        <div class="metric"><div class="summary-label">平均ペース</div><div class="summary-value">${avg("pace")} <span style="font-size:12px;color:var(--text-muted)">/km</span></div></div>
-        <div class="metric"><div class="summary-label">平均速度</div><div class="summary-value">${avg("speed")} <span style="font-size:12px;color:var(--text-muted)">km/h</span></div></div>
-      </div>
-    </div>
-    <div class="tab-nav">
-      <button class="tab-btn ${state.view==='list'?'active':''}" onclick="setState({view:'list',tab:'list'})">RECORDS</button>
-      <button class="tab-btn ${state.view==='calendar'?'active':''}" onclick="setState({view:'calendar',tab:'calendar'})">CALENDAR</button>
-    </div>`;
+    html+=`<div class="header"><div class="header-top"><div><div class="logo">Workout <span>Log</span></div><div class="subtitle">${state.records.length} SESSIONS RECORDED</div><div class="pink-line"></div></div><button class="btn-primary" onclick="setState({view:'add',form:emptyForm()})">+ \u8a18\u9332\u3092\u8ffd\u52a0</button></div><div class="summary-grid"><div class="metric"><div class="summary-label">\u7dcf\u8ddd\u96e2</div><div class="summary-value summary-accent">${totalDist} <span style="font-size:12px;color:var(--text-muted)">km</span></div></div><div class="metric"><div class="summary-label">\u7dcf\u6d88\u8cbb\u30ab\u30ed\u30ea\u30fc</div><div class="summary-value summary-accent">${totalCal} <span style="font-size:12px;color:var(--text-muted)">kcal</span></div></div><div class="metric"><div class="summary-label">\u5e73\u5747\u30da\u30fc\u30b9</div><div class="summary-value">${avg("pace")} <span style="font-size:12px;color:var(--text-muted)">/km</span></div></div><div class="metric"><div class="summary-label">\u5e73\u5747\u901f\u5ea6</div><div class="summary-value">${avg("speed")} <span style="font-size:12px;color:var(--text-muted)">km/h</span></div></div></div></div><div class="tab-nav"><button class="tab-btn ${state.view==='list'?'active':''}" onclick="setState({view:'list',tab:'list'})">RECORDS</button><button class="tab-btn ${state.view==='calendar'?'active':''}" onclick="setState({view:'calendar',tab:'calendar'})">CALENDAR</button></div>`;
   }
-
-  // LIST VIEW
   if(state.view==="list"){
     html+=`<div class="content">`;
-    if(!sorted.length){
-      html+=`<div class="empty">まだ記録がありません</div>`;
-    }else{
+    if(!sorted.length){html+=`<div class="empty">\u307e\u3060\u8a18\u9332\u304c\u3042\u308a\u307e\u305b\u3093</div>`;}
+    else{
       html+=`<div class="records-list">`;
-      sorted.forEach(r=>{
-        html+=`<div class="card row-card" onclick="setState({view:'detail',selected:${r.id}})">
-          <div class="record-date">${r.date} <span class="tag tag-pink">${r.distance}km</span><span class="tag tag-gold">${r.calories}kcal</span></div>
-          <div class="record-main">
-            <div class="record-stats">
-              <span class="big-num">${r.distance}<span class="unit">km</span></span>
-              <span class="big-num">${r.time}<span class="unit">min</span></span>
-              <span class="big-num">${r.calories}<span class="unit">kcal</span></span>
-            </div>
-            <div class="record-sub">
-              <div>${r.pace} /km</div>
-              <div>${r.speed} km/h</div>
-              <div>METs ${r.mets}</div>
-            </div>
-          </div>
-          ${r.note?`<div class="record-note">${r.note}</div>`:""}
-        </div>`;
-      });
+      sorted.forEach(r=>{html+=`<div class="card row-card" onclick="setState({view:'detail',selected:${r.id}})"><div class="record-date">${r.date} <span class="tag tag-pink">${r.distance}km</span><span class="tag tag-gold">${r.calories}kcal</span></div><div class="record-main"><div class="record-stats"><span class="big-num">${r.distance}<span class="unit">km</span></span><span class="big-num">${r.time}<span class="unit">min</span></span><span class="big-num">${r.calories}<span class="unit">kcal</span></span></div><div class="record-sub"><div>${r.pace} /km</div><div>${r.speed} km/h</div><div>METs ${r.mets}</div></div></div>${r.note?`<div class="record-note">${r.note}</div>`:""}</div>`;});
       html+=`</div>`;
     }
     html+=`</div>`;
   }
-
-  // CALENDAR VIEW
-  if(state.view==="calendar"){
-    html+=`<div class="content"><div class="card" style="padding:22px 20px">`;
-    html+=buildCalendar(state.calYear, state.calMonth);
-    html+=`</div></div>`;
-  }
-
-  // ADD VIEW
+  if(state.view==="calendar"){html+=`<div class="content"><div class="card" style="padding:22px 20px">`+buildCalendar(state.calYear,state.calMonth)+`</div></div>`;}
   if(state.view==="add"){
-    html+=`<div class="content">
-      <div class="back-row">
-        <button class="btn-ghost" onclick="setState({view:'list',tab:'list'})">← 戻る</button>
-        <span class="back-label">新しい記録</span>
-      </div>
-      <div class="card" style="padding:22px">
-        <div class="form-grid">
-          ${fld("date","日付","date",state.form.date)}
-          ${fld("time","経過時間 (MM:SS)","text",state.form.time)}
-          ${fld("distance","距離 (km)","number",state.form.distance)}
-          ${fld("climbing","クライミング (m)","number",state.form.climbing)}
-          ${fld("calories","消費カロリー (kcal)","number",state.form.calories)}
-          ${fld("caloriesPerHour","1時間あたり消費カロリー","number",state.form.caloriesPerHour)}
-          ${fld("pace","平均ペース (分/km)","text",state.form.pace)}
-          ${fld("speed","平均速度 (km/h)","number",state.form.speed)}
-          ${fld("mets","METs","number",state.form.mets)}
-          ${fld("watts","ワット (W)","number",state.form.watts)}
-          <div class="form-full">
-            <label>メモ</label>
-            <textarea rows="2" oninput="updateForm('note',this.value)">${state.form.note}</textarea>
-          </div>
-        </div>
-        <div class="form-actions">
-          <button class="btn-primary" onclick="addRecord()">保存する</button>
-          <button class="btn-ghost" onclick="setState({view:'list',tab:'list'})">キャンセル</button>
-        </div>
-      </div>
-    </div>`;
-  }
-
-  // DETAIL VIEW
-  if(state.view==="detail"&&state.selected){
-    const r=state.records.find(x=>x.id===state.selected);
-    if(r){
-      html+=`<div style="padding:28px 28px 0;border-bottom:1px solid var(--border)">
-        <div class="logo" style="font-size:28px">Workout <span>Log</span></div>
-      </div>
-      <div class="content">
-        <div class="back-row">
-          <button class="btn-ghost" onclick="setState({view:'list',tab:'list'})">← 戻る</button>
-          <span class="back-label">${r.date}</span>
-        </div>
-        <div class="card" style="padding:24px">
-          <div class="detail-grid">
-            ${dm("経過時間",r.time)}
-            ${dm("距離",r.distance+" km")}
-            ${dm("消費カロリー",r.calories+" kcal")}
-            ${dm("1h消費カロリー",r.caloriesPerHour+" kcal")}
-            ${dm("平均ペース",r.pace+" /km")}
-            ${dm("平均速度",r.speed+" km/h")}
-            ${dm("クライミング",r.climbing+" m")}
-            ${dm("METs",""+r.mets)}
-            ${dm("ワット",r.watts+" W")}
-          </div>
-          ${r.note?`<div class="detail-note">${r.note}</div>`:""}
-        </div>
-        <div style="margin-top:16px">
-          <button class="btn-danger" onclick="deleteRecord(${r.id})">この記録を削除</button>
-        </div>
-      </div>`;
-    }
-  }
-
-  app.innerHTML=html;
-}
-
-function fld(key,label,type,value){return `<div><label>${label}</label><input type="${type}" value="${value||''}" oninput="updateForm('${key}',this.value)"></div>`;}
-function dm(label,value){return `<div class="metric"><div class="detail-label">${label}</div><div class="detail-value">${value}</div></div>`;}
-
-render();
-</script>
-</body>
-</html>
+    html+=`<div class="content"><div class="back-row"><button class="btn-ghost" onclick="setState({view:'list',tab:'list'})">\u2190 \u623b\u308b</button><span class="back-label">\u65b0\u3057\u3044\u8a18\u9332</span></div><div class="card" style="padding:22px"><div class="form-grid">${fld("date","\u65e5\u4ed8","date",state.form.date)}${fld("time","\u7d4c\u904e\u6642\u9593 (MM:SS)","text",state.form.time)}${fld("distance","\u8ddd\u96e2 (km)","number",state.form.distance)}${fld("climbing","\u30af\u30e9\u30a4\u30df\u30f3\u30b0 (m)","number",state.form.climbing)}${fld("calories","\u6d88\u8cbb\u30ab\u30ed\u30ea\u30fc (kcal)","number",state.form.calories)}${fld("caloriesPerHour","1\u6642\u9593\u3042\u305f\u308a\u6d88\u8cbb\u30ab\u30ed\u30ea\u30fc","number",state.form.caloriesPerHour)}${fld("pace","\u5e73\u5747\u30da\u30fc\u30b9 (\u5206/km)","text",state.form.pace)}${fld("speed","\u5e73\u5747\u901f\u5ea6 (km/h)","number",state.form.speed)}${fld("mets","METs","number",state.form.mets)}${fld("watts","\u30ef\u30c3\u30c8 (W)","number",state.form.watts)}<div class="form-full"><label>\u30e1\u30e2</label><textarea rows="2" oninput="updateForm('note',this.value)">${state.form.note}</textarea></div></div><div class="form-actions"><button class="btn-primary" onclick="addRecord()">
