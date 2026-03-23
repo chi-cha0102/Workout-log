@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WORKOUT LOG</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  :root {
+    --bg: #faf9f7;
+    --bg2: #f3f0ec;
+    --border: #e2dbd4;
+    --pink: #b5445a;
+    --pink-light: #b5445a22;
+    --pink-mid: #b5445a55;
+    --gold: #a07830;
+    --gold-light: #a0783018;
+    --gold-mid: #a0783044;
+    --text: #3a3430;
+    --text-muted: #8a7e78;
+    --text-faint: #c4b8b0;
+  }
+  body { min-height:100vh; background:var(--bg); font-family:'DM Mono','Courier New',monospace; color:var(--text); padding-bottom:60px; }
+  ::-webkit-scrollbar { width:4px; background:var(--bg2); }
+  ::-webkit-scrollbar-thumb { background:var(--gold-mid); border-radius:2px; }
+  #app { max-width:780px; margin:0 auto; }
+
+  .card { background:#fff; border:1px solid var(--border); border-radius:14px; transition:border-color .15s, box-shadow .15s; }
+  .card:hover { border-color:var(--gold-mid); box-shadow:0 2px 16px #a0783010; }
+  .metric { background:var(--bg2); border-radius:10px; padding:12px 16px; }
+
+  .btn-primary {
+    background: var(--pink);
+    color:#fff; border:none; border-radius:8px;
+    padding:10px 24px; cursor:pointer; font-weight:400;
+    font-family:inherit; font-size:12px; letter-spacing:.1em;
+    transition: background .15s, transform .1s;
+  }
+  .btn-primary:hover { background:#9a3549; transform:translateY(-1px); }
+  .btn-ghost {
+    background:transparent; color:var(--gold); border:1px solid var(--gold-mid);
+    border-radius:8px; padding:9px 20px; cursor:pointer;
+    font-family:inherit; font-size:12px; transition:border-color .15s;
+    letter-spacing:.05em;
+  }
+  .btn-ghost:hover { border-color:var(--gold); }
+  .btn-danger {
+    background:transparent; color:#c0392b; border:1px solid #c0392b33;
+    border-radius:8px; padding:9px 20px; cursor:pointer;
+    font-family:inherit; font-size:12px;
+  }
+  .btn-danger:hover { border-color:#c0392b88; }
+
+  input, textarea {
+    background:var(--bg2); border:1px solid var(--border);
+    color:var(--text); border-radius:8px; padding:9px 13px;
+    font-family:inherit; font-size:13px; width:100%;
+    transition:border-color .15s;
+  }
+  input:focus, textarea:focus { outline:none; border-color:var(--pink-mid); background:#fff; }
+  label { font-size:10px; color:var(--text-muted); letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:5px; }
+
+  /* Header */
+  .header { padding:36px 28px 20px; border-bottom:1px solid var(--border); }
+  .header-top { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px; }
+  .logo {
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-size:38px; font-weight:300; letter-spacing:.12em;
+    color:var(--text); line-height:1;
+  }
+  .logo span { color:var(--pink); }
+  .subtitle { font-size:10px; color:var(--text-faint); letter-spacing:.15em; margin-top:4px; }
+
+  .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .summary-label { font-size:9px; color:var(--text-muted); letter-spacing:.1em; margin-bottom:6px; text-transform:uppercase; }
+  .summary-value { font-size:17px; font-weight:400; color:var(--text); }
+  .summary-accent { color:var(--gold); }
+
+  /* List */
+  .content { padding:20px 28px; }
+  .records-list { display:flex; flex-direction:column; gap:10px; }
+  .row-card { padding:18px 22px; cursor:pointer; }
+  .row-card:hover { background:var(--bg2); }
+  .record-date { font-size:11px; color:var(--text-muted); margin-bottom:8px; letter-spacing:.08em; }
+  .record-main { display:flex; justify-content:space-between; align-items:center; }
+  .record-stats { display:flex; gap:22px; flex-wrap:wrap; align-items:baseline; }
+  .big-num {
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-size:28px; font-weight:300; color:var(--text); letter-spacing:.04em;
+  }
+  .unit { font-size:11px; color:var(--text-muted); margin-left:2px; font-family:'DM Mono',monospace; }
+  .record-sub div { font-size:11px; color:var(--text-muted); text-align:right; line-height:1.7; }
+  .record-note { margin-top:10px; font-size:12px; color:var(--text-muted); font-style:italic; border-top:1px solid var(--border); padding-top:10px; }
+  .empty { text-align:center; color:var(--text-faint); padding:70px; font-size:13px; letter-spacing:.05em; }
+
+  /* Divider line accent */
+  .pink-line { width:32px; height:2px; background:var(--pink); border-radius:2px; margin:10px 0 0; }
+  .gold-line { width:32px; height:2px; background:var(--gold); border-radius:2px; margin:10px 0 0; }
+
+  /* Add form */
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .form-full { grid-column:1/-1; }
+  .form-actions { display:flex; gap:10px; margin-top:20px; }
+  .back-row { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
+  .back-label { font-size:13px; color:var(--text-muted); }
+
+  /* Detail */
+  .detail-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px; }
+  .detail-label { font-size:9px; color:var(--text-muted); margin-bottom:6px; letter-spacing:.1em; text-transform:uppercase; }
+  .detail-value { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; color:var(--text); }
+  .detail-note { border-top:1px solid var(--border); padding-top:12px; font-size:12px; color:var(--text-muted); font-style:italic; }
+
+  /* Tag badge */
+  .tag { display:inline-block; font-size:9px; letter-spacing:.1em; padding:2px 8px; border-radius:20px; margin-left:8px; vertical-align:middle; }
+  .tag-pink { background:var(--pink-light); color:var(--pink); border:1px solid var(--pink-mid); }
+  .tag-gold { background:var(--gold-light); color:var(--gold); border:1px solid var(--gold-mid); }
+
+  @media(max-width:600px) {
+    .summary-grid { grid-template-columns:1fr 1fr; }
+    .detail-grid { grid-template-columns:1fr 1fr; }
+    .form-grid { grid-template-columns:1fr; }
+    .form-full { grid-column:1; }
+    .header { padding:24px 18px 16px; }
+    .content { padding:16px 18px; }
+    .logo { font-size:30px; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const STORAGE_KEY = "workout-records-v2";
+
+const initialRecords = [{
+  id: 1742000000000,
+  date: "2026-03-23",
+  time: "20:14",
+  distance: 3.00,
+  climbing: 59,
+  calories: 184,
+  caloriesPerHour: 545,
+  pace: "6:45",
+  speed: 8.8,
+  mets: 9.8,
+  watts: 124,
+  note: ""
+}];
+
+function loadRecords() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    return s ? JSON.parse(s) : initialRecords;
+  } catch { return initialRecords; }
+}
+function saveRecords(r) { localStorage.setItem(STORAGE_KEY, JSON.stringify(r)); }
+
+let state = { records: loadRecords(), view:"list", selected:null, form:emptyForm() };
+
+function emptyForm() {
+  return { date:new Date().toISOString().slice(0,10), time:"", distance:"", climbing:"", calories:"", caloriesPerHour:"", pace:"", speed:"", mets:"", watts:"", note:"" };
+}
+function setState(p) { state={...state,...p}; render(); }
+
+function avg(key) {
+  const v = state.records.map(r=>parseFloat(r[key])).filter(v=>!isNaN(v)&&v>0);
+  if(!v.length)return"–";
+  return (v.reduce((a,b)=>a+b,0)/v.length).toFixed(1);
+}
+function total(key) {
+  return state.records.map(r=>parseFloat(r[key])).filter(v=>!isNaN(v)).reduce((a,b)=>a+b,0).toFixed(1);
+}
+
+function addRecord() {
+  const f=state.form;
+  const rec={id:Date.now(),date:f.date,time:f.time,
+    distance:parseFloat(f.distance)||0,climbing:parseInt(f.climbing)||0,
+    calories:parseInt(f.calories)||0,caloriesPerHour:parseInt(f.caloriesPerHour)||0,
+    pace:f.pace,speed:parseFloat(f.speed)||0,mets:parseFloat(f.mets)||0,
+    watts:parseInt(f.watts)||0,note:f.note};
+  const next=[rec,...state.records];
+  saveRecords(next);
+  setState({records:next,view:"list",form:emptyForm()});
+}
+
+function deleteRecord(id) {
+  if(!confirm("この記録を削除しますか？"))return;
+  const next=state.records.filter(r=>r.id!==id);
+  saveRecords(next);
+  setState({records:next,view:"list",selected:null});
+}
+
+function updateForm(key,value) { setState({form:{...state.form,[key]:value}}); }
+
+function render() {
+  const app=document.getElementById("app");
+  const sorted=[...state.records].sort((a,b)=>b.date.localeCompare(a.date));
+  const totalDist=parseFloat(total("distance")).toFixed(1);
+  const totalCal=parseFloat(total("calories")).toFixed(0);
+
+  let html=`
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="logo">Workout <span>Log</span></div>
+        <div class="subtitle">${state.records.length} SESSIONS RECORDED</div>
+        <div class="pink-line"></div>
+      </div>
+      <button class="btn-primary" onclick="setState({view:'add',form:emptyForm()})">+ 記録を追加</button>
+    </div>
+    <div class="summary-grid">
+      <div class="metric">
+        <div class="summary-label">総距離</div>
+        <div class="summary-value summary-accent">${totalDist} <span style="font-size:12px;color:var(--text-muted)">km</span></div>
+      </div>
+      <div class="metric">
+        <div class="summary-label">総消費カロリー</div>
+        <div class="summary-value summary-accent">${totalCal} <span style="font-size:12px;color:var(--text-muted)">kcal</span></div>
+      </div>
+      <div class="metric">
+        <div class="summary-label">平均ペース</div>
+        <div class="summary-value">${avg("pace")} <span style="font-size:12px;color:var(--text-muted)">/km</span></div>
+      </div>
+      <div class="metric">
+        <div class="summary-label">平均速度</div>
+        <div class="summary-value">${avg("speed")} <span style="font-size:12px;color:var(--text-muted)">km/h</span></div>
+      </div>
+    </div>
+  </div>`;
+
+  if(state.view==="list"){
+    html+=`<div class="content">`;
+    if(!sorted.length){
+      html+=`<div class="empty">まだ記録がありません</div>`;
+    }else{
+      html+=`<div class="records-list">`;
+      sorted.forEach(r=>{
+        html+=`
+        <div class="card row-card" onclick="setState({view:'detail',selected:${r.id}})">
+          <div class="record-date">${r.date} <span class="tag tag-pink">${r.distance}km</span><span class="tag tag-gold">${r.calories}kcal</span></div>
+          <div class="record-main">
+            <div class="record-stats">
+              <span class="big-num">${r.distance}<span class="unit">km</span></span>
+              <span class="big-num">${r.time}<span class="unit">min</span></span>
+              <span class="big-num">${r.calories}<span class="unit">kcal</span></span>
+            </div>
+            <div class="record-sub">
+              <div>${r.pace} /km</div>
+              <div>${r.speed} km/h</div>
+              <div>METs ${r.mets}</div>
+            </div>
+          </div>
+          ${r.note?`<div class="record-note">${r.note}</div>`:""}
+        </div>`;
+      });
+      html+=`</div>`;
+    }
+    html+=`</div>`;
+  }
+
+  if(state.view==="add"){
+    html+=`
+    <div class="content">
+      <div class="back-row">
+        <button class="btn-ghost" onclick="setState({view:'list'})">← 戻る</button>
+        <span class="back-label">新しい記録</span>
+      </div>
+      <div class="card" style="padding:22px">
+        <div class="form-grid">
+          ${fld("date","日付","date",state.form.date)}
+          ${fld("time","経過時間 (MM:SS)","text",state.form.time)}
+          ${fld("distance","距離 (km)","number",state.form.distance)}
+          ${fld("climbing","クライミング (m)","number",state.form.climbing)}
+          ${fld("calories","消費カロリー (kcal)","number",state.form.calories)}
+          ${fld("caloriesPerHour","1時間あたり消費カロリー","number",state.form.caloriesPerHour)}
+          ${fld("pace","平均ペース (分/km)","text",state.form.pace)}
+          ${fld("speed","平均速度 (km/h)","number",state.form.speed)}
+          ${fld("mets","METs","number",state.form.mets)}
+          ${fld("watts","ワット (W)","number",state.form.watts)}
+          <div class="form-full">
+            <label>メモ</label>
+            <textarea rows="2" oninput="updateForm('note',this.value)">${state.form.note}</textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="addRecord()">保存する</button>
+          <button class="btn-ghost" onclick="setState({view:'list'})">キャンセル</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if(state.view==="detail"&&state.selected){
+    const r=state.records.find(x=>x.id===state.selected);
+    if(r){
+      html+=`
+      <div class="content">
+        <div class="back-row">
+          <button class="btn-ghost" onclick="setState({view:'list',selected:null})">← 戻る</button>
+          <span class="back-label">${r.date}</span>
+        </div>
+        <div class="card" style="padding:24px">
+          <div class="detail-grid">
+            ${dm("経過時間",r.time)}
+            ${dm("距離",r.distance+" km")}
+            ${dm("消費カロリー",r.calories+" kcal")}
+            ${dm("1h消費カロリー",r.caloriesPerHour+" kcal")}
+            ${dm("平均ペース",r.pace+" /km")}
+            ${dm("平均速度",r.speed+" km/h")}
+            ${dm("クライミング",r.climbing+" m")}
+            ${dm("METs",""+r.mets)}
+            ${dm("ワット",r.watts+" W")}
+          </div>
+          ${r.note?`<div class="detail-note">${r.note}</div>`:""}
+        </div>
+        <div style="margin-top:16px">
+          <button class="btn-danger" onclick="deleteRecord(${r.id})">この記録を削除</button>
+        </div>
+      </div>`;
+    }
+  }
+
+  app.innerHTML=html;
+}
+
+function fld(key,label,type,value){
+  return `<div><label>${label}</label><input type="${type}" value="${value||''}" oninput="updateForm('${key}',this.value)"></div>`;
+}
+function dm(label,value){
+  return `<div class="metric"><div class="detail-label">${label}</div><div class="detail-value">${value}</div></div>`;
+}
+
+render();
+</script>
+</body>
+</html>
